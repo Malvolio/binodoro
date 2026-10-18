@@ -2485,7 +2485,7 @@ footer > span:last-child {
     font-size: 11px;
     line-height: 1.05;
   }
-  .pomodoro-page[data-phase="focus"] .timer-stage {
+  .pomodoro-page .timer-stage {
     width: 300px;
     height: 316px;
   }
@@ -2494,17 +2494,17 @@ footer > span:last-child {
   }
 }
 @media (max-width: 600px) and (max-height: 750px) {
-  .pomodoro-page[data-phase="focus"] .timer-stage {
+  .pomodoro-page .timer-stage {
     width: 220px;
     height: 208px;
   }
 }
 @media (max-width: 600px) and (max-height: 600px) {
-  .pomodoro-page[data-phase="focus"] .timer-stage {
+  .pomodoro-page .timer-stage {
     width: 190px;
     height: 174px;
   }
-  .pomodoro-page[data-phase="focus"] .timer-digits {
+  .pomodoro-page .timer-digits {
     font-size: 36px;
   }
 }

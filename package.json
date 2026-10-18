@@ -11,7 +11,8 @@
     "check": "tsc -p tsconfig.json",
     "preview": "bun run --cwd packages/web preview",
     "format": "prettier --write packages tests *.ts *.json *.md",
-    "deploy": "alchemy deploy --stage production"
+    "deploy": "alchemy deploy --stage production",
+    "deploy:email": "alchemy deploy alchemy.email.ts --stage production"
   },
   "dependencies": {
     "@effect-atom/atom": "^0.5.0",

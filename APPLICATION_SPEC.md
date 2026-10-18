@@ -64,3 +64,5 @@ Natural completion selects the next standard Pomodoro phase: short breaks after 
 The controls page is an explicit exception to timer-only sound: user-initiated Play audio and blind auditions preview binaural settings without starting the Pomodoro timer, regardless of selected break mode. Returning home ends the preview and restores timer-controlled sound.
 
 Timer artwork uses browser-compatible WebP copies of the supplied JPEG XL tomato slices in public/images. All decorative leaf artwork is removed; long break uses a walking icon.
+
+The subtitle and Learn more dialog are available in every timer mode. The About dialog exposes info@binodoro.online as a mailto link. A separate Alchemy email deployment (`alchemy.email.ts`, production only) provisions the Gmail destination, waits for recipient verification, then enables Cloudflare Email Routing and the exact info@ forwarding rule. This is infrastructure forwarding; the browser app still has no email server or sending API. Initial activation requires mail/DNS permissions and approval for domain MX/TXT changes; existing external MX records must be inspected before activation.

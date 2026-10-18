@@ -65,15 +65,13 @@ export const Pomodoro = () => {
                 ? "Time to take a breath"
                 : "Time to take a walk"}
           </h1>
-          {timer.phase === "focus" && (
-            <p className="pomodoro-subtitle">
-              Binodoro combines Pomodoro time-management with binaural beats for
-              concentration{" "}
-              <button className="about-link" onClick={() => setAboutOpen(true)}>
-                Learn more
-              </button>
-            </p>
-          )}
+          <p className="pomodoro-subtitle">
+            Binodoro combines Pomodoro time-management with binaural beats for
+            concentration{" "}
+            <button className="about-link" onClick={() => setAboutOpen(true)}>
+              Learn more
+            </button>
+          </p>
         </div>
         <div className="phase-tabs" role="tablist" aria-label="Timer mode">
           {phases.map(({ id, label, icon: Icon }) => (

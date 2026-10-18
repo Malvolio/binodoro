@@ -6,7 +6,8 @@
     "tests/**/*.ts",
     "playwright.config.ts",
     "vitest.config.ts",
-    "alchemy.run.ts"
+    "alchemy.run.ts",
+    "alchemy.email.ts"
   ],
   "exclude": ["node_modules", "packages/web/dist"]
 }

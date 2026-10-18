@@ -406,6 +406,9 @@ test("compact phones keep sound selection, edit presets, and Volume in view", as
     for (const phase of ["Focus", "Short break", "Long break"]) {
       await page.getByRole("tab", { name: phase, exact: true }).click();
       await expect(
+        page.getByRole("button", { name: "Learn more", exact: true }),
+      ).toBeVisible();
+      await expect(
         page.getByRole("slider", { name: "Volume slider", exact: true }),
       ).toBeInViewport({ ratio: 1 });
       expect(
@@ -535,6 +538,9 @@ test("About explains the timer and sound studio and closes accessibly", async ({
   const dialog = page.getByRole("dialog", { name: "About Binodoro" });
   await expect(dialog).toBeVisible();
   await expect(dialog).toContainText("After four focus sessions");
+  await expect(
+    dialog.getByRole("link", { name: "info@binodoro.online" }),
+  ).toHaveAttribute("href", "mailto:info@binodoro.online");
   await expect(dialog).toContainText("mixed and limited");
   await expect(dialog).toContainText(
     "preview tones without starting the timer",

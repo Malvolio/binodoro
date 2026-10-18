@@ -63,6 +63,19 @@ export const AboutDialog = ({
         Use headphones for binaural listening and start at a low, comfortable
         volume.
       </p>
+      <p>
+        Questions or feedback?{" "}
+        <a href="mailto:info@binodoro.online">info@binodoro.online</a>
+      </p>
+      <p>
+        <a
+          href="https://buymeacoffee.com/michaellorton"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Buy me a coffee
+        </a>
+      </p>
       <p className="about-sources">
         Learn more:{" "}
         <a

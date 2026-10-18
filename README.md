@@ -106,3 +106,15 @@ bun run alchemy deploy --stage preview
 ```
 
 The deployment definition uses pinned Alchemy 0.94.0 APIs rather than the incompatible 2.0 beta API. No deployment is performed during `bun run build` or `bun run check`.
+
+### Contact email forwarding
+
+The About dialog links to `mailto:info@binodoro.online`. Provision forwarding to `malvoliosf+binodoro@gmail.com` with:
+
+```sh
+bun run deploy:email
+```
+
+This uses `alchemy.email.ts` and a separate `binodoro-email/production` state scope, so website deployments and preview stages do not change mail settings. The Cloudflare credential additionally needs account **Email Routing Addresses Write**, zone **Email Routing Rules Write**, **Zone Read**, and DNS access for `binodoro.online`. Retain this scope’s state just like the website state.
+
+On the first run, Cloudflare may send a destination-verification email. Click its link in Gmail and rerun `bun run deploy:email`. Only a verified destination activates routing and the exact `info@` forwarding rule. Enabling Email Routing configures the domain’s MX/TXT records; an existing external mail provider’s MX records must be resolved before enabling it. This configures incoming forwarding, not outgoing mail from the domain.
