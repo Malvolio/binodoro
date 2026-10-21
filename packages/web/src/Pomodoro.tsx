@@ -73,6 +73,42 @@ export const Pomodoro = () => {
             </button>
           </p>
         </div>
+        <section className="timer-stage" aria-label={`${active.label} timer`}>
+          <div className="tomato-disc">
+            <TimerRing timer={timer} onChange={setRemaining} />
+            <div
+              className="timer-face"
+              id="timer-display"
+              role="tabpanel"
+              aria-labelledby={`tab-${timer.phase}`}
+            >
+              <div
+                className="timer-digits"
+                role="timer"
+                aria-label="Time remaining"
+                aria-live="off"
+              >
+                {formatTime(timer.remainingMs)}
+              </div>
+              {!timer.running && (
+                <button
+                  className="timer-start timer-overlay-start"
+                  onClick={toggleTimer}
+                >
+                  <Play size={21} fill="currentColor" />
+                  {timer.remainingMs < phaseDurations[timer.phase]
+                    ? "Resume"
+                    : timer.phase === "focus"
+                      ? "Start focus"
+                      : "Start break"}
+                </button>
+              )}
+              <span className="timer-mode-label">
+                {active.label.toUpperCase()} TIME
+              </span>
+            </div>
+          </div>
+        </section>
         <div className="phase-tabs" role="tablist" aria-label="Timer mode">
           {phases.map(({ id, label, icon: Icon }) => (
             <button
@@ -106,44 +142,14 @@ export const Pomodoro = () => {
             </button>
           ))}
         </div>
-        <section className="timer-stage" aria-label={`${active.label} timer`}>
-          <div className="tomato-disc">
-            <TimerRing timer={timer} onChange={setRemaining} />
-            <div
-              className="timer-face"
-              id="timer-display"
-              role="tabpanel"
-              aria-labelledby={`tab-${timer.phase}`}
-            >
-              <div
-                className="timer-digits"
-                role="timer"
-                aria-label="Time remaining"
-                aria-live="off"
-              >
-                {formatTime(timer.remainingMs)}
-              </div>
-              <span className="timer-mode-label">
-                {active.label.toUpperCase()} TIME
-              </span>
-            </div>
-          </div>
-        </section>
         <div className="timer-actions">
-          <button className="timer-start" onClick={toggleTimer}>
-            {timer.running ? (
-              <Pause size={22} fill="currentColor" />
-            ) : (
-              <Play size={21} fill="currentColor" />
-            )}
-            {timer.running
-              ? "Pause"
-              : timer.remainingMs < phaseDurations[timer.phase]
-                ? "Resume"
-                : "Start focus".replace(
-                    "focus",
-                    timer.phase === "focus" ? "focus" : "break",
-                  )}
+          <button
+            className="timer-reset timer-pause"
+            onClick={toggleTimer}
+            disabled={!timer.running}
+          >
+            <Pause size={20} />
+            <span>Pause</span>
           </button>
           <button
             className="timer-reset"

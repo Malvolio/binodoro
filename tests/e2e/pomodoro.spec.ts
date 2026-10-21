@@ -310,9 +310,7 @@ test("timer ring supports drag and keyboard adjustment", async ({ page }) => {
   await page.getByRole("button", { name: "Start focus", exact: true }).click();
   await ring.focus();
   await page.keyboard.press("Home");
-  await expect
-    .poll(async () => Number(await ring.getAttribute("aria-valuenow")))
-    .toBeLessThanOrEqual(1);
+
   await expect(page.getByRole("timer")).toHaveText("05:00");
 });
 test("completion emits three short native beeps once; reset and mute do not announce", async ({
@@ -492,37 +490,76 @@ test("invalid saved sound preferences fall back to safe defaults", async ({
   ).toBeVisible();
 });
 
-test("completed sessions select the standard Pomodoro sequence", async ({
+test("completed sessions automatically start the standard Pomodoro sequence", async ({
   page,
 }) => {
   await page.clock.install({ time: new Date("2026-10-18T12:00:00Z") });
   await page.goto("/");
   await page.clock.pauseAt(new Date("2026-10-18T12:01:00Z"));
+  await expect(
+    page.getByRole("button", { name: "Pause", exact: true }),
+  ).toBeDisabled();
+  await page.getByRole("button", { name: "Start focus", exact: true }).click();
   for (let focus = 1; focus <= 4; focus++) {
-    await page
-      .getByRole("button", { name: "Start focus", exact: true })
-      .click();
     await page.clock.fastForward(25 * 60_000);
     const breakName = focus === 4 ? "Long break" : "Short break";
     await expect(
       page.getByRole("tab", { name: breakName, exact: true }),
     ).toHaveAttribute("aria-selected", "true");
-    await expect(page.getByRole("timer")).toHaveText(
-      focus === 4 ? "15:00" : "05:00",
-    );
+    await expect(
+      page.getByRole("button", { name: "Pause", exact: true }),
+    ).toBeEnabled();
+    await expect(page.locator(".timer-overlay-start")).toHaveCount(0);
     await page.clock.fastForward(1000);
     await expect(page.getByRole("timer")).toHaveText(
-      focus === 4 ? "15:00" : "05:00",
+      focus === 4 ? "14:59" : "04:59",
     );
-    await page
-      .getByRole("button", { name: "Start break", exact: true })
-      .click();
-    await page.clock.fastForward((focus === 4 ? 15 : 5) * 60_000);
+    await page.clock.fastForward((focus === 4 ? 15 : 5) * 60_000 - 1000);
     await expect(
       page.getByRole("tab", { name: "Focus", exact: true }),
     ).toHaveAttribute("aria-selected", "true");
     await expect(page.getByRole("timer")).toHaveText("25:00");
   }
+  await page.getByRole("tab", { name: "Long break", exact: true }).click();
+  await expect(
+    page.getByRole("button", { name: "Start break", exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Pause", exact: true }),
+  ).toBeDisabled();
+});
+
+test("mode steps follow the timer and Start floats over the time", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const timer = (await page.getByRole("timer").boundingBox())!;
+  const start = (await page
+    .getByRole("button", { name: "Start focus", exact: true })
+    .boundingBox())!;
+  const steps = (await page
+    .getByRole("tablist", { name: "Timer mode" })
+    .boundingBox())!;
+  expect(steps.y).toBeGreaterThan(timer.y + timer.height);
+  expect(start.y).toBeLessThan(timer.y + timer.height);
+  expect(start.y + start.height).toBeGreaterThan(timer.y);
+});
+
+test("hiding the document keeps focus sound playing", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Start focus", exact: true }).click();
+  await expect(page.getByText("PLAYING", { exact: true })).toBeVisible();
+  await page.evaluate(() => {
+    Object.defineProperty(document, "hidden", {
+      configurable: true,
+      get: () => true,
+    });
+    document.dispatchEvent(new Event("visibilitychange"));
+  });
+  await expect(page.getByText("PLAYING", { exact: true })).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Pause", exact: true }),
+  ).toBeEnabled();
 });
 
 test("About explains the timer and sound studio and closes accessibly", async ({

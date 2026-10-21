@@ -2508,3 +2508,97 @@ footer > span:last-child {
     font-size: 36px;
   }
 }
+
+/* Clickable mode steps follow the timer. */
+.pomodoro-page .phase-tabs {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  gap: 0;
+  margin-top: 8px;
+  max-width: 480px;
+}
+.pomodoro-page .phase-tabs button {
+  position: relative;
+  min-width: 0;
+  min-height: 48px;
+  padding: 12px 20px 12px 26px;
+  border-radius: 0;
+  background: oklch(0.92 0.025 50);
+  clip-path: polygon(
+    0 0,
+    calc(100% - 14px) 0,
+    100% 50%,
+    calc(100% - 14px) 100%,
+    0 100%,
+    14px 50%
+  );
+}
+.pomodoro-page .phase-tabs button + button {
+  margin-left: -10px;
+}
+.pomodoro-page .phase-tabs button.active {
+  background: linear-gradient(
+    145deg,
+    color-mix(in oklch, var(--focus-accent), white 9%),
+    var(--focus-accent)
+  );
+}
+.pomodoro-page .phase-tabs button:hover {
+  filter: brightness(0.96);
+}
+.pomodoro-page .phase-tabs button:focus-visible {
+  background: oklch(0.78 0.06 50);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.pomodoro-page .timer-actions {
+  padding-left: 0;
+}
+.timer-pause:disabled {
+  opacity: 0.4;
+  cursor: default;
+  box-shadow: none;
+  transform: none;
+}
+.pomodoro-page .timer-overlay-start {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: auto;
+  background: oklch(0.99 0.01 50 / 0.94);
+  color: oklch(0.31 0.04 35);
+  box-shadow: 0 5px 24px oklch(0.25 0.06 30 / 0.25);
+  z-index: 2;
+}
+@media (max-width: 600px) {
+  .pomodoro-page .phase-tabs button {
+    gap: 4px;
+    padding: 9px 14px 9px 19px;
+    min-height: 38px;
+  }
+}
+@media (max-width: 360px) {
+  .pomodoro-page .phase-tabs button {
+    font-size: 9px;
+    gap: 3px;
+  }
+  .pomodoro-page .phase-tabs button svg {
+    width: 13px;
+    flex-shrink: 0;
+  }
+}
+.pomodoro-page .timer-face {
+  z-index: 3;
+}
+
+/* Balance the disc’s 41px top inset against its 2px bottom inset
+   and the 8px gap before the mode steps. */
+.pomodoro-page .timer-stage {
+  margin-top: -31px;
+}
+.timer-pause:disabled:hover {
+  background: oklch(1 0 0 / 0.6);
+}

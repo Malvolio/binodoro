@@ -48,12 +48,6 @@ export class AudioEngine {
     (this.playing && this.context
       ? this.context.currentTime - this.lastStartedAt
       : 0);
-  private onVisibility = () => {
-    if (document.hidden && this.playing) {
-      this.pause();
-      this.onState?.(false);
-    }
-  };
   private timer: ReturnType<typeof setInterval> | undefined;
   playing = false;
   onState: ((playing: boolean) => void) | null = null;
@@ -168,7 +162,6 @@ export class AudioEngine {
         this.onState?.(false);
       }
     };
-    document.addEventListener("visibilitychange", this.onVisibility);
     this.timer = setInterval(this.schedule, 80);
   };
   private playGeneration = 0;
@@ -349,7 +342,6 @@ export class AudioEngine {
   };
   dispose = async () => {
     if (this.timer) clearInterval(this.timer);
-    document.removeEventListener("visibilitychange", this.onVisibility);
     this.onState = null;
     this.waveformTimers.forEach(clearTimeout);
     this.pulseOscillators.forEach((o) => o.stop());

@@ -37,8 +37,8 @@ export const AboutDialog = ({
         task, focus for 25 minutes, then take a 5-minute break. After four focus
         sessions, take a 15-minute break. This structure can help you get
         started, protect time from distractions, and make space for regular
-        rest. Binodoro selects the next mode automatically; press Start when
-        you’re ready.
+        rest. Press Start to begin; Binodoro then starts each next mode
+        automatically with transition tones.
       </p>
       <h3>A sound to accompany your focus</h3>
       <p>

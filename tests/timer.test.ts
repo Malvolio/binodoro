@@ -38,14 +38,14 @@ describe("Pomodoro timing", () => {
     expect(completed).toMatchObject({
       phase: "short",
       remainingMs: phaseDurations.short,
-      running: false,
+      running: true,
       completed: 1,
-      deadline: null,
+      deadline: phaseDurations.focus + 60_000 + phaseDurations.short,
     });
-    expect(tickTimer(completed, 9_000_000).completed).toBe(1);
-    expect(toggleTimer(completed, 10_000_000).remainingMs).toBe(
-      phaseDurations.short,
+    expect(tickTimer(completed, phaseDurations.focus + 61_000).completed).toBe(
+      1,
     );
+    expect(completed.remainingMs).toBe(phaseDurations.short);
   });
   it("does not count a completed break as a focus session", () => {
     const completed = tickTimer(
@@ -110,23 +110,22 @@ it("cycles through four focus sessions with short breaks and a long fourth break
   let state = createTimer();
   for (let cycle = 0; cycle < 2; cycle++) {
     for (let focus = 1; focus <= 4; focus++) {
-      const started = toggleTimer(state, 0);
-      state = tickTimer(started, phaseDurations.focus);
+      const started = state.running ? state : toggleTimer(state, 0);
+      state = tickTimer(started, started.deadline!);
       const breakPhase = focus === 4 ? "long" : "short";
       expect(state).toMatchObject({
         phase: breakPhase,
         remainingMs: phaseDurations[breakPhase],
         completed: cycle * 4 + focus,
-        running: false,
-        started: false,
+        running: true,
+        started: true,
       });
-      const unchanged = tickTimer(state, 99_000_000);
-      expect(unchanged).toBe(state);
-      state = tickTimer(toggleTimer(state, 0), phaseDurations[breakPhase]);
+      expect(tickTimer(state, state.deadline! - 1000).phase).toBe(breakPhase);
+      state = tickTimer(state, state.deadline!);
       expect(state).toMatchObject({
         phase: "focus",
         remainingMs: phaseDurations.focus,
-        running: false,
+        running: true,
         completed: cycle * 4 + focus,
       });
     }
