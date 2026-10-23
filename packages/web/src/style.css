@@ -2556,7 +2556,7 @@ footer > span:last-child {
 .pomodoro-page .timer-actions {
   padding-left: 0;
 }
-.timer-pause:disabled {
+.timer-reset:disabled {
   opacity: 0.4;
   cursor: default;
   box-shadow: none;
@@ -2599,6 +2599,60 @@ footer > span:last-child {
 .pomodoro-page .timer-stage {
   margin-top: -31px;
 }
-.timer-pause:disabled:hover {
+.timer-reset:disabled:hover {
   background: oklch(1 0 0 / 0.6);
+}
+
+.audio-volume-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  max-width: 570px;
+  margin: 18px auto 10px;
+  padding: 10px 16px;
+  border: 1px solid oklch(0.87 0.025 45);
+  border-radius: 15px;
+  background: oklch(0.995 0.006 60 / 0.65);
+  box-shadow: 0 6px 25px oklch(0.75 0.05 45 / 0.07);
+}
+.audio-volume-card .pomodoro-volume {
+  flex: 1;
+  min-width: 0;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+}
+.audio-volume-card .control {
+  margin: 0;
+}
+.audio-volume-card .range-labels {
+  display: none;
+}
+@media (max-width: 600px) {
+  .audio-volume-card {
+    gap: 12px;
+    padding: 8px 10px;
+    margin-top: 12px;
+  }
+}
+/* The tightened stage overlaps the intro only in its empty top inset. */
+.pomodoro-page .timer-stage {
+  pointer-events: none;
+}
+.pomodoro-page .tomato-disc {
+  pointer-events: auto;
+}
+
+.pomodoro-page .sound-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.pomodoro-page .sound-picker label {
+  line-height: 1.4;
+}
+.pomodoro-page .sound-picker select {
+  min-height: 40px;
+  padding: 8px 20px 8px 0;
+  line-height: 1.4;
 }

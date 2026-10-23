@@ -45,7 +45,6 @@ export const Pomodoro = () => {
   } = useSession();
   const active = phases.find((phase) => phase.id === timer.phase)!;
   const allPresets = [...builtins, ...custom];
-  const completedDots = timer.completed === 0 ? 0 : timer.completed % 4 || 4;
   const changeSound = (id: string) => {
     const sound = allPresets.find((p) => p.id === id);
     if (sound) {
@@ -104,7 +103,7 @@ export const Pomodoro = () => {
                 </button>
               )}
               <span className="timer-mode-label">
-                {active.label.toUpperCase()} TIME
+                {active.label.toUpperCase()}
               </span>
             </div>
           </div>
@@ -154,6 +153,10 @@ export const Pomodoro = () => {
           <button
             className="timer-reset"
             onClick={resetTimer}
+            disabled={
+              !timer.running &&
+              timer.remainingMs === phaseDurations[timer.phase]
+            }
             aria-label="Reset timer"
             title="Reset timer"
           >
@@ -161,103 +164,84 @@ export const Pomodoro = () => {
             <span>Reset</span>
           </button>
         </div>
-        <div className="session-progress">
-          <div
-            className="session-dots"
-            aria-label={`${timer.completed} focus sessions complete`}
-          >
-            {[0, 1, 2, 3].map((i) => (
-              <span key={i} className={i < completedDots ? "complete" : ""} />
-            ))}
-          </div>
-          <span>
-            {timer.completed === 0
-              ? "YOUR NEXT SMALL STEP"
-              : `${timer.completed} FOCUS ${timer.completed === 1 ? "SESSION" : "SESSIONS"} COMPLETE`}
-          </span>
-        </div>
         <section
-          className="pomodoro-sound"
+          className="audio-volume-card"
           aria-label={
             timer.phase === "focus"
-              ? "Binaural sound controls"
+              ? "Sound volume controls"
               : "Break music controls"
           }
         >
-          <div className="sound-panel-top">
-            <button
-              className={`sound-toggle ${!muted ? "is-playing" : ""}`}
-              aria-label={!muted ? "Mute sound" : "Play sound"}
-              aria-pressed={!muted}
-              onClick={toggleMute}
-            >
-              {!muted ? <Volume2 size={21} /> : <VolumeX size={21} />}
-            </button>
-            {timer.phase === "focus" && (
-              <>
-                <div className="sound-picker">
-                  <label htmlFor="focus-sound">
-                    YOUR BINAURAL SOUND
-                    <span>
-                      {muted ? "MUTED" : playing ? "PLAYING" : "READY"}
-                    </span>
-                  </label>
-                  <select
-                    id="focus-sound"
-                    aria-label="Sound preset"
-                    value={preset}
-                    onChange={(e) => changeSound(e.target.value)}
-                  >
-                    <option value="">Custom sound</option>
-                    <optgroup label="Focus sounds">
-                      {builtins.map((p) => (
+          <button
+            className={`sound-toggle ${!muted ? "is-playing" : ""}`}
+            aria-label={!muted ? "Mute sound" : "Play sound"}
+            aria-pressed={!muted}
+            onClick={toggleMute}
+          >
+            {!muted ? <Volume2 size={21} /> : <VolumeX size={21} />}
+          </button>
+          <div className="pomodoro-volume">
+            <Control
+              label="Volume"
+              value={masterVolume}
+              min={0}
+              max={100}
+              unit="%"
+              onChange={changeVolume}
+            />
+          </div>
+        </section>
+        {timer.phase === "focus" && (
+          <section
+            className="pomodoro-sound"
+            aria-label="Binaural sound controls"
+          >
+            <div className="sound-panel-top">
+              <div className="sound-picker">
+                <label htmlFor="focus-sound">
+                  YOUR BINAURAL SOUND
+                  <span>{muted ? "MUTED" : playing ? "PLAYING" : "READY"}</span>
+                </label>
+                <select
+                  id="focus-sound"
+                  aria-label="Sound preset"
+                  value={preset}
+                  onChange={(e) => changeSound(e.target.value)}
+                >
+                  <option value="">Custom sound</option>
+                  <optgroup label="Focus sounds">
+                    {builtins.map((p) => (
+                      <option key={p.id} value={p.id}>
+                        {p.name}
+                      </option>
+                    ))}
+                  </optgroup>
+                  {custom.length > 0 && (
+                    <optgroup label="Your saved sounds">
+                      {custom.map((p) => (
                         <option key={p.id} value={p.id}>
                           {p.name}
                         </option>
                       ))}
                     </optgroup>
-                    {custom.length > 0 && (
-                      <optgroup label="Your saved sounds">
-                        {custom.map((p) => (
-                          <option key={p.id} value={p.id}>
-                            {p.name}
-                          </option>
-                        ))}
-                      </optgroup>
-                    )}
-                  </select>
-                </div>
-                <Link to="/controls" className="edit-presets-button">
-                  edit presets
-                </Link>
-              </>
-            )}
-          </div>
-          {timer.phase === "focus" && (
-            <>
-              {" "}
-              <div className="sound-panel-bottom">
-                <span>
-                  <Headphones size={13} /> Headphones on. Start quietly.
-                </span>
-                <span>
-                  {settings.carrier.toFixed(0)} Hz carrier <b>·</b>{" "}
-                  {settings.beat.toFixed(1)} Hz beat
-                </span>
+                  )}
+                </select>
               </div>
-            </>
-          )}
-        </section>
-        <div className="pomodoro-volume">
-          <Control
-            label="Volume"
-            value={masterVolume}
-            min={0}
-            max={100}
-            unit="%"
-            onChange={changeVolume}
-          />
-        </div>
+              <Link to="/controls" className="edit-presets-button">
+                edit presets
+              </Link>
+            </div>
+            <div className="sound-panel-bottom">
+              <span>
+                <Headphones size={13} /> Headphones on. Start quietly.
+              </span>
+              <span>
+                {settings.carrier.toFixed(0)} Hz carrier <b>·</b>{" "}
+                {settings.beat.toFixed(1)} Hz beat
+              </span>
+            </div>
+          </section>
+        )}
         {error && (
           <div className="pomodoro-error" role="alert">
             {error}

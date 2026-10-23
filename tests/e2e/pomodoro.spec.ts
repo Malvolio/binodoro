@@ -10,10 +10,27 @@ test("home shows the Pomodoro timer and supports focus, breaks, pause, and reset
   ).toBeVisible();
   const time = page.getByRole("timer", { name: "Time remaining" });
   await expect(time).toHaveText("25:00");
+  await expect(
+    page.getByRole("button", { name: "Reset timer", exact: true }),
+  ).toBeDisabled();
+  await expect(page.locator(".timer-mode-label")).toHaveText("FOCUS");
+  await expect(
+    page
+      .getByRole("combobox", { name: "Sound preset", exact: true })
+      .locator("option:checked"),
+  ).toHaveText("Alpha");
+
+  await expect(page.locator(".session-progress")).toHaveCount(0);
   await page.getByRole("button", { name: "Start focus", exact: true }).click();
+  await expect(
+    page.getByRole("button", { name: "Reset timer", exact: true }),
+  ).toBeEnabled();
   await page.clock.fastForward(2500);
   await expect(time).toHaveText("24:58");
   await page.getByRole("button", { name: "Pause", exact: true }).click();
+  await expect(
+    page.getByRole("button", { name: "Reset timer", exact: true }),
+  ).toBeEnabled();
   await page.clock.fastForward(5000);
   await expect(time).toHaveText("24:58");
   await page.getByRole("button", { name: "Resume", exact: true }).click();
@@ -32,7 +49,6 @@ test("home shows the Pomodoro timer and supports focus, breaks, pause, and reset
   await expect(
     page.getByRole("tab", { name: "Short break", exact: true }),
   ).toHaveAttribute("aria-selected", "true");
-  await expect(page.getByLabel("1 focus sessions complete")).toBeVisible();
 });
 test("sound, saved presets, and a running timer are shared with the secondary controls page", async ({
   page,
@@ -117,6 +133,23 @@ test("minimal headers and always-visible Volume follow the selected timer mode",
     page.getByRole("spinbutton", { name: "Volume", exact: true }),
   ).toBeVisible();
   await expect(page.locator("details.focus-volume")).toHaveCount(0);
+  const volumeCard = page.getByRole("region", {
+    name: "Sound volume controls",
+  });
+  await expect(
+    volumeCard.getByRole("button", { name: "Mute sound", exact: true }),
+  ).toBeVisible();
+  await expect(
+    volumeCard.getByRole("slider", { name: "Volume slider", exact: true }),
+  ).toBeVisible();
+  const volumeBounds = (await volumeCard.boundingBox())!;
+  const binauralBounds = (await page
+    .getByRole("region", { name: "Binaural sound controls" })
+    .boundingBox())!;
+  expect(binauralBounds.y).toBeGreaterThanOrEqual(
+    volumeBounds.y + volumeBounds.height,
+  );
+
   await page.getByRole("tab", { name: "Short break", exact: true }).click();
   await expect(
     page.getByRole("heading", { name: "Time to take a breath", exact: true }),
@@ -399,6 +432,13 @@ test("compact phones keep sound selection, edit presets, and Volume in view", as
     await expect(picker).toBeInViewport({ ratio: 1 });
     await expect(edit).toBeInViewport({ ratio: 1 });
     const pickerBox = (await picker.boundingBox())!;
+    const labelBox = (await page
+      .locator('label[for="focus-sound"]')
+      .boundingBox())!;
+    expect(pickerBox.y - (labelBox.y + labelBox.height)).toBeGreaterThanOrEqual(
+      8,
+    );
+
     const editBox = (await edit.boundingBox())!;
     expect(pickerBox.x + pickerBox.width).toBeLessThanOrEqual(editBox.x);
     for (const phase of ["Focus", "Short break", "Long break"]) {
