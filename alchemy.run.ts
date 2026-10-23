@@ -7,6 +7,11 @@ export const website = await Website("website", {
   name: `binodoro-${app.stage}`,
   // Build and verify TanStack Start prerendered pages before uploading assets.
   build: "bun run build",
+  // Alchemy's default Worker returns plain text for non-navigation misses.
+  // Delegate to the binding so Cloudflare applies the configured 404-page rule.
+  script: `export default {
+    fetch(request, env) { return env.ASSETS.fetch(request); }
+  };`,
   assets: {
     directory: "./packages/web/dist/client",
     _headers:
