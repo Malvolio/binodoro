@@ -4,6 +4,8 @@
     "packages/**/*.ts",
     "packages/**/*.tsx",
     "tests/**/*.ts",
+    "scripts/**/*.ts",
+    "scripts/**/*.tsx",
     "playwright.config.ts",
     "vitest.config.ts",
     "alchemy.run.ts",

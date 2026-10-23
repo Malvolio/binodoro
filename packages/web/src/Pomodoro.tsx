@@ -55,6 +55,12 @@ export const Pomodoro = () => {
   return (
     <div className="pomodoro-page" data-phase={timer.phase}>
       <AboutDialog open={aboutOpen} onDismiss={() => setAboutOpen(false)} />
+      <noscript>
+        <p>
+          Start and customize your timer by enabling JavaScript.{" "}
+          <a href="/about">Learn about Pomodoro and binaural beats</a>.
+        </p>
+      </noscript>
       <main className="pomodoro-main">
         <div className="pomodoro-intro">
           <h1>
@@ -255,13 +261,14 @@ export const Pomodoro = () => {
           </span>
         </p>
       </main>
-      <div className="pomodoro-footer">
+      <footer className="pomodoro-footer">
         <span>Made for a more intentional day.</span>
         <span>
           <Headphones size={12} /> Binaural tones and break music, played
           locally.
         </span>
-      </div>
+        <Link to="/about">About Binodoro · Pomodoro &amp; binaural beats</Link>
+      </footer>
     </div>
   );
 };

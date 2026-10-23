@@ -108,6 +108,9 @@ test("timer page fits mobile and mode tabs support keyboard navigation", async (
   expect(
     await page.evaluate(() => document.documentElement.scrollWidth),
   ).toBeLessThanOrEqual(390);
+  await expect(
+    page.getByRole("tab", { name: "Focus", exact: true }),
+  ).toBeEnabled();
   await page.getByRole("tab", { name: "Focus", exact: true }).focus();
   await page.keyboard.press("ArrowRight");
   await expect(
@@ -321,6 +324,9 @@ test("focus, short break, and long break use red, yellow, and green themes", asy
 
 test("timer ring supports drag and keyboard adjustment", async ({ page }) => {
   await page.goto("/");
+  await expect(page.locator(".application-controls")).not.toHaveAttribute(
+    "disabled",
+  );
   const ring = page.getByRole("slider", {
     name: "Remaining time",
     exact: true,
@@ -351,6 +357,9 @@ test("completion emits three short native beeps once; reset and mute do not anno
 }) => {
   await page.clock.install({ time: new Date("2026-10-18T12:00:00Z") });
   await page.goto("/");
+  await expect(page.locator(".application-controls")).not.toHaveAttribute(
+    "disabled",
+  );
   await page.clock.pauseAt(new Date("2026-10-18T12:01:00Z"));
   await page
     .getByRole("slider", { name: "Remaining time", exact: true })

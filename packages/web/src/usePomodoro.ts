@@ -1,3 +1,5 @@
+import { useRouterState } from "@tanstack/react-router";
+import { homeTitle } from "./seo";
 import { CompletionChime } from "./chime";
 import { useEffect } from "react";
 import { Atom } from "@effect-atom/atom";
@@ -16,6 +18,9 @@ import { useRuntime } from "./runtime";
 const timerAtom = Atom.make(createTimer());
 export const usePomodoro = () => {
   const runtime = useRuntime();
+  const pathname = useRouterState({
+    select: (state) => state.location.pathname,
+  });
   const [timer, setTimer] = useAtom(timerAtom);
   useEffect(() => {
     const update = () =>
@@ -32,8 +37,13 @@ export const usePomodoro = () => {
     };
   }, [runtime, setTimer]);
   useEffect(() => {
-    document.title = `${formatTime(timer.remainingMs)} · Binaural Pomodoro`;
-  }, [timer.remainingMs]);
+    if (pathname === "/") {
+      document.title =
+        timer.running || timer.started
+          ? `${formatTime(timer.remainingMs)} · ${homeTitle}`
+          : homeTitle;
+    }
+  }, [timer.remainingMs, timer.running, timer.started, pathname]);
   return {
     timer,
     toggleTimer: () => {

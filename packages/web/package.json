@@ -4,8 +4,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host 0.0.0.0",
-    "build": "tsc -b && vite build",
+    "build": "vite build && tsc -b && bun ../../scripts/verify-static.ts",
     "test": "vitest run",
-    "preview": "vite preview --host 0.0.0.0"
+    "preview": "bun ../../scripts/preview.ts"
   }
 }

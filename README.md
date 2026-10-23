@@ -1,10 +1,10 @@
 # Binaural Pomodoro
 
-A local Pomodoro timer with a shared binaural sound studio, built with React, strict TypeScript, Vite, Tailwind, shadcn/ui, native Web Audio, and the Lorton Cloudflare Stack's Effect architecture. No backend, accounts, remote synthesis, or external runtime requests. Binaural tones are synthesized locally; breaks use the bundled music files.
+A local Pomodoro timer with a shared binaural sound studio, built with React, TanStack Start, strict TypeScript, Vite, Tailwind, shadcn/ui, native Web Audio, and the Lorton Cloudflare Stack's Effect architecture. No backend, accounts, remote synthesis, or external runtime requests. Binaural tones are synthesized locally; breaks use the bundled music files.
 
 ## Run
 
-Requires Bun 1.3+ and a current browser.
+Requires Bun 1.3+, Node 22.12+ (or a supported newer LTS), and a current browser.
 
 ```sh
 bun install
@@ -17,7 +17,7 @@ Open the local URL printed by Vite (normally http://localhost:5173). The home pa
 bun run check       # strict type checking, including tests
 bun run test        # domain and Effect service tests
 bun run test:e2e    # Playwright browser, persistence, mobile, and actual audio routing tests
-bun run build      # production bundle: packages/web/dist
+bun run build      # prerendered static site: packages/web/dist/client
 bun run preview    # serve the production build locally
 bun run format     # format source files
 ```
@@ -70,9 +70,9 @@ Begin quietly and take breaks. A software gain limit cannot account for the head
 - `packages/shared/src`: calculations, sweep interpolation, routing matrices, branded preset IDs, and authoritative Effect schemas.
 - `packages/web/src/audio.ts`: native audio infrastructure and persistent graph; no React dependencies.
 - `packages/web/src/runtime.tsx`: injected Audio and Presets services, Layers, typed failures, scoped cleanup, and React runtime access.
-- `packages/web/src/main.tsx`: application-lifetime runtime owner; disposes on actual teardown and development replacement, not StrictMode remounts.
+- `packages/web/src/router.tsx`: TanStack Start router factory and application-lifetime runtime owner; disposes on actual teardown and development replacement, not provider remounts.
 - `packages/web/src/Session.tsx`: a shared session provider above the routes; Effect Atom owns settings, playback state, presets, and master volume. `usePomodoro.ts` owns timer updates through the injected Effect clock.
-- `packages/web/src/router.tsx`: TanStack Router with `/` (Pomodoro) and `/controls` (sound studio).
+- `packages/web/src/routes`: prerendered timer, sound studio, About article, and error page, with a shared React document shell.
 - `packages/shared/src/timer.ts`: pure deadline, pause/resume, reset, completion, and time-formatting logic.
 - `packages/web/src`: component-local React state; Effect Atom handles form state. Canvas animation uses requestAnimationFrame without audio-rate React renders.
 - `tests`: Vitest/@effect/vitest and Playwright verification.
@@ -120,3 +120,17 @@ This uses `alchemy.email.ts` and a separate `binodoro-email/production` state sc
 On the first run, Cloudflare may send a destination-verification email. Click its link in Gmail and rerun `bun run deploy:email`. Only a verified destination activates routing and the exact `info@` forwarding rule. Enabling Email Routing configures the domain’s MX/TXT records; an existing external mail provider’s MX records must be resolved before enabling it. This configures incoming forwarding, not outgoing mail from the domain.
 
 Timer modes are clickable chevron steps below the dial. Start/Resume floats over the time, and the separate Pause control is disabled while stopped. Natural completion starts the next mode automatically as its transition tones play.
+
+## Static rendering and SEO
+
+TanStack Start prerenders the timer, sound studio, and About page directly from React. The About dialog and `/about` share one content component. Every indexable page includes its own title, description, canonical URL, and share metadata in the initial HTML. `robots.txt` points to Start's generated sitemap. The timer's tab title retains the product description while showing a running countdown.
+
+`bun run build` generates `packages/web/dist/client`, type-checks the app, and verifies the output before reporting success. `dist/server` is used only during prerendering. Builds use the Node runtime required by Vite/Start (Node 22.12+ or a supported newer LTS); Bun remains the package manager and script runner. `bun run preview` serves the generated files locally at http://localhost:4173, including clean URLs and real 404 responses.
+
+`bun run deploy` uses Alchemy to run this same verified build **before** uploading `dist/client` to Cloudflare. Missing pages or metadata stop deployment. Cloudflare redirects `.html` and trailing-slash variants to clean URLs and serves the generated error document with a 404 status. Preview stages are noindex; production uses `https://binodoro.online` as the canonical origin. The contact-email deployment remains separate.
+
+Run `bun run test:e2e:static` to build and test the shipped site, including pages with JavaScript disabled. Run `bun run test:e2e` for the development suite, including native audio measurements that import development modules. Development tests use their own port, 5175. The three native module checks are skipped in the static suite; all user-facing timer, sound, and preset tests run in both suites.
+
+The checked-in 1200×630 share image uses existing tomato artwork. Regenerate it with `bun run generate:social` after changing its React composition in `scripts/generate-social.tsx`; it is not generated during ordinary builds.
+
+After deploying, verify `https://binodoro.online/` in Google Search Console, submit `https://binodoro.online/sitemap.xml`, and inspect `/`, `/about`, and `/controls` using URL Inspection. Confirm that the rendered text and canonical URL are correct and monitor indexing and Core Web Vitals as field data becomes available. These steps need the domain owner's Search Console access; the build does not submit anything to Google automatically.

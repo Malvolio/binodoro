@@ -2,7 +2,7 @@ import { SoundPreferences } from "./soundPreferences";
 import { CompletionChime } from "./chime";
 import { CoffeeDialog } from "./CoffeeDialog";
 import { useCoffeeInvitation } from "./useCoffeeInvitation";
-import { useRouterState } from "@tanstack/react-router";
+import { useHydrated, useRouterState } from "@tanstack/react-router";
 import {
   createContext,
   useContext,
@@ -253,6 +253,7 @@ const useSessionController = () => {
     }
   }, [pathname, blindActive]);
   return {
+    ready: preferencesReady,
     settings,
     setSettings,
     masterVolume,
@@ -294,9 +295,15 @@ const SessionContext = createContext<ReturnType<
 > | null>(null);
 export const SessionProvider = ({ children }: { children: ReactNode }) => {
   const session = useSessionController();
+  const hydrated = useHydrated();
   return (
     <SessionContext.Provider value={session}>
-      {children}
+      <fieldset
+        className="application-controls"
+        disabled={!hydrated || !session.ready}
+      >
+        {children}
+      </fieldset>
       <CoffeeDialog
         open={session.coffeeOpen}
         onDismiss={session.dismissCoffee}

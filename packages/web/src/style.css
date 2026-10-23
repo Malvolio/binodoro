@@ -1865,7 +1865,7 @@ footer > span:last-child {
   font-size: 8px;
   gap: 14px;
 }
-.pomodoro-footer span:last-child {
+.pomodoro-footer > span:last-of-type {
   display: flex;
   align-items: center;
   gap: 5px;
@@ -2018,7 +2018,7 @@ footer > span:last-child {
   .pomodoro-footer > span:first-child {
     display: none;
   }
-  .pomodoro-footer > span:last-child {
+  .pomodoro-footer > span:last-of-type {
     margin: auto;
   }
   .pomodoro-footnote {
@@ -2655,4 +2655,63 @@ footer > span:last-child {
   min-height: 40px;
   padding: 8px 20px 8px 0;
   line-height: 1.4;
+}
+
+.about-page-shell {
+  --focus-accent: oklch(0.55 0.17 30);
+  --focus-dark: oklch(0.35 0.1 30);
+  min-height: 100dvh;
+  color-scheme: light;
+  color: oklch(0.3 0.035 30);
+  background: oklch(0.985 0.012 65);
+}
+.about-page {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 32px 24px 64px;
+  font-size: 16px;
+  line-height: 1.75;
+}
+.about-page nav {
+  margin-bottom: 32px;
+}
+.about-page h1 {
+  font-size: clamp(2rem, 6vw, 3rem);
+  margin-bottom: 20px;
+}
+.about-page h2 {
+  display: block;
+  margin-top: 28px;
+  font-size: 20px;
+}
+.about-page p {
+  margin: 16px 0;
+}
+.about-lead {
+  font-size: 1.15rem;
+}
+.pomodoro-footer {
+  flex-wrap: wrap;
+  align-items: center;
+}
+.about-page a:not(.edit-presets-button) {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.pomodoro-footer a {
+  color: oklch(0.48 0.04 40);
+  font-size: 11px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* Static copy stays readable; controls activate once React can handle input. */
+.application-controls {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+.application-controls:disabled [role="slider"] {
+  pointer-events: none;
 }

@@ -80,6 +80,10 @@ test("mobile layout fits viewport and sliders remain keyboard accessible", async
 test("native audio graph isolates tones, swaps channels, and mixes mono", async ({
   page,
 }) => {
+  test.skip(
+    process.env.TEST_STATIC === "1",
+    "Native engine imports run against the development server",
+  );
   await openRunningStudio(page);
 
   const result = await page.evaluate(async () => {
@@ -137,6 +141,10 @@ test("native audio graph isolates tones, swaps channels, and mixes mono", async 
 test("sweeps follow the audio clock, pause retains position, and stop resets", async ({
   page,
 }) => {
+  test.skip(
+    process.env.TEST_STATIC === "1",
+    "Native engine imports run against the development server",
+  );
   await openRunningStudio(page);
 
   const result = await page.evaluate(async () => {
@@ -350,6 +358,16 @@ test("master volume is independent of presets, randomization, and blind stimuli"
   await page.getByRole("button", { name: "Reveal", exact: true }).click();
   await expect(volume).toHaveValue("3");
   await page.getByRole("button", { name: "Pause", exact: true }).click();
+});
+
+test("native engine master gain ignores volume stored in sound settings", async ({
+  page,
+}) => {
+  test.skip(
+    process.env.TEST_STATIC === "1",
+    "Native engine imports run against the development server",
+  );
+  await openRunningStudio(page);
   const gain = await page.evaluate(async () => {
     const { AudioEngine, defaults } = await import("/src/audio.ts" as string);
     const engine = new AudioEngine();
@@ -402,6 +420,9 @@ test("whole panel title rows toggle from titles, blank space, and chevrons", asy
   page,
 }) => {
   await page.goto("/controls");
+  await expect(page.locator(".application-controls")).not.toHaveAttribute(
+    "disabled",
+  );
   for (const viewport of [
     { width: 1280, height: 900 },
     { width: 320, height: 568 },
